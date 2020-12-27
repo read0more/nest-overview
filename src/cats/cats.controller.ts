@@ -1,3 +1,4 @@
+import { CatsService } from './cats.service';
 import {
   Controller,
   Get,
@@ -14,11 +15,13 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { CreateCatDto } from './create-cat.dto';
-import { UpdateCatDto } from './update-cat.dto';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { UpdateCatDto } from './dto/update-cat.dto';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
+
   @Get()
   userAgent(@Headers('user-agent') userAgent: string): string {
     console.log(userAgent);
