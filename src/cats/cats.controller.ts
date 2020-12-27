@@ -31,7 +31,7 @@ export class CatsController {
 
   @Get()
   notWorking(): string {
-    return '위에 있는게 우선돼서 들어올 일이 없다';
+    return '위에 있는게 우선되므로 화면에 이 문장이 보일일은 없지만...이 path에 대해 apply한 미들웨어는 이 함수로 인해 두 번 동작한다.';
   }
 
   @Get('a*z')
