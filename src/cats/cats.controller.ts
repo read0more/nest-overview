@@ -101,8 +101,8 @@ export class CatsController {
 
   // create쪽은 Joi를 사용, update쪽에는 class-validator를 사용. nest와 합치기에는 class-validator가 더 좋다고 느낌
   @Post()
-  // @UsePipes(new JoiValidationPipe(createCatSchema))
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new JoiValidationPipe(createCatSchema))
+  // @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createCatDto: CreateCatDto) {
     // this.catsService.create(createCatDto)
     console.log(createCatDto);
