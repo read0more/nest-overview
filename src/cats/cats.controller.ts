@@ -1,3 +1,7 @@
+import { ClassValidatorValidationPipe } from './pipes/class-validator-validation.pipe';
+import { JoiValidationPipe } from './pipes/joi-validation.pipe';
+import { HttpExceptionFilter } from './../common/filters/http-exception.filter';
+import { ForbiddenException } from './../common/exception/ForbiddenException.exception';
 import { CatsService } from './cats.service';
 import {
   Controller,
@@ -13,12 +17,21 @@ import {
   Body,
   Put,
   Delete,
+  HttpStatus,
+  UseFilters,
+  ParseIntPipe,
+  UsePipes,
+  ValidationPipe,
+  DefaultValuePipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import createCatSchema from './schemas/create-cat-schema';
 
 @Controller('cats')
+@UseFilters(HttpExceptionFilter) // 메서드 위에 데코레이터를 달면 스코프가 메서드로 바뀜
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -48,6 +61,19 @@ export class CatsController {
     return '';
   }
 
+  @Get('/pipe')
+  pipeTest(
+    @Query(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+    @Query('activeOnly', new DefaultValuePipe(false), ParseBoolPipe)
+    activeOnly: boolean,
+  ) {
+    return id;
+  }
+
   @Get('/redirect')
   @Redirect('https://google.com')
   redirect(@Query('site') site) {
@@ -67,14 +93,28 @@ export class CatsController {
     return [1, 2, 3];
   }
 
+  @Get('/forbidden')
+  forbidden(@Req() request: Request) {
+    throw new ForbiddenException();
+    // throw new HttpException('Forbidden....', HttpStatus.FORBIDDEN);
+  }
+
+  // create쪽은 Joi를 사용, update쪽에는 class-validator를 사용. nest와 합치기에는 class-validator가 더 좋다고 느낌
   @Post()
+  // @UsePipes(new JoiValidationPipe(createCatSchema))
+  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createCatDto: CreateCatDto) {
+    // this.catsService.create(createCatDto)
     console.log(createCatDto);
     return '새 고양이다';
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+  update(
+    @Param('id') id: string,
+    @Body(new ClassValidatorValidationPipe()) updateCatDto: UpdateCatDto,
+  ) {
+    // this.catsService.update(updateCatDto)
     return `#${id} 고양이 정보가 갱신되었다.`;
   }
 
