@@ -1,3 +1,4 @@
+import { TransformInterceptor } from './../common/intercepters/transform.interceptor';
 import { ClassValidatorValidationPipe } from './pipes/class-validator-validation.pipe';
 import { JoiValidationPipe } from './pipes/joi-validation.pipe';
 import { HttpExceptionFilter } from './../common/filters/http-exception.filter';
@@ -21,9 +22,9 @@ import {
   UseFilters,
   ParseIntPipe,
   UsePipes,
-  ValidationPipe,
   DefaultValuePipe,
   ParseBoolPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -32,6 +33,7 @@ import createCatSchema from './schemas/create-cat-schema';
 
 @Controller('cats')
 @UseFilters(HttpExceptionFilter) // 메서드 위에 데코레이터를 달면 스코프가 메서드로 바뀜
+@UseInterceptors(TransformInterceptor)
 export class CatsController {
   constructor(private catsService: CatsService) {}
 

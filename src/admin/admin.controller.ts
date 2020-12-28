@@ -1,8 +1,10 @@
+import { LoggingInterceptor } from './../common/intercepters/logging.interceptor';
 import { GlobalService } from './../global/global.service';
 import { CatsService } from './../cats/cats.service';
-import { Controller, Get, HostParam, SetMetadata } from '@nestjs/common';
+import { Controller, Get, HostParam, UseInterceptors } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller({ host: ':account.admin.localhost' })
 export class AdminController {
   constructor(
