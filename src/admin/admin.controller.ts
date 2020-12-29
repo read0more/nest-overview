@@ -10,6 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { ModuleRef } from '@nestjs/core';
 
 @UseInterceptors(LoggingInterceptor)
 @Controller({ host: ':account.admin.localhost' })
@@ -20,6 +21,7 @@ export class AdminController {
     private catsService: CatsService,
     private globalService: GlobalService,
     private configService: ConfigService,
+    private moduleRef: ModuleRef,
   ) {}
 
   @Get()
@@ -30,5 +32,11 @@ export class AdminController {
     console.log(account, this.async);
     console.log(this.configService.get('key2'));
     return `${account} ${this.value}`;
+  }
+
+  @Get('/print')
+  print() {
+    console.log(this.moduleRef.get('ConfigService', { strict: false }));
+    return '콘솔로그에 찍었음';
   }
 }
