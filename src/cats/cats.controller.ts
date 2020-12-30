@@ -1,3 +1,4 @@
+import { Cat } from './interfaces/cat.interface';
 import { TransformInterceptor } from './../common/intercepters/transform.interceptor';
 import { ClassValidatorValidationPipe } from './pipes/class-validator-validation.pipe';
 import { JoiValidationPipe } from './pipes/joi-validation.pipe';
@@ -37,11 +38,18 @@ import createCatSchema from './schemas/create-cat-schema';
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
-  @Get()
-  userAgent(@Headers('user-agent') userAgent: string): string {
+  @Get('/print')
+  print(
+    @Headers('user-agent') userAgent: string,
+    @Query('string') string,
+  ): string {
     console.log(userAgent);
+    return string;
+  }
 
-    return '콘솔로그에 userAgent';
+  @Get()
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   @Get()
